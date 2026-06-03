@@ -1,0 +1,97 @@
+{% extends "styles.html" %}
+
+{% block title %}{{ form_title }} | Disease Case Log{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <section class="case-form" aria-labelledby="caseFormTitle">
+        <div class="case-form__heading">
+            <a href="{{ url_for('index') }}" class="case-form__back">&larr; Back to Dashboard</a>
+            <h2 id="caseFormTitle">{{ form_title }}</h2>
+            <p>Record disease details, location, severity, and reporting notes.</p>
+        </div>
+
+        <form class="case-form__panel" method="post" novalidate>
+            <div class="case-form__grid">
+                <label class="case-form__field">
+                    <span>Disease Name</span>
+                    <input
+                        type="text"
+                        name="disease_name"
+                        value="{{ case_record.disease_name }}"
+                        required
+                    >
+                    {% if errors.disease_name %}
+                    <small>{{ errors.disease_name }}</small>
+                    {% endif %}
+                </label>
+
+                <label class="case-form__field">
+                    <span>Severity</span>
+                    <select name="severity" required>
+                        {% for severity in severity_levels %}
+                        <option value="{{ severity }}" {% if case_record.severity == severity %}selected{% endif %}>
+                            {{ severity }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% if errors.severity %}
+                    <small>{{ errors.severity }}</small>
+                    {% endif %}
+                </label>
+
+                <label class="case-form__field">
+                    <span>City / County</span>
+                    <input
+                        type="text"
+                        name="location"
+                        value="{{ case_record.location }}"
+                        required
+                    >
+                    {% if errors.location %}
+                    <small>{{ errors.location }}</small>
+                    {% endif %}
+                </label>
+
+                <label class="case-form__field">
+                    <span>Case Count</span>
+                    <input
+                        type="number"
+                        name="case_count"
+                        value="{{ case_record.case_count }}"
+                        min="0"
+                        step="1"
+                        required
+                    >
+                    {% if errors.case_count %}
+                    <small>{{ errors.case_count }}</small>
+                    {% endif %}
+                </label>
+
+                <label class="case-form__field">
+                    <span>Date Reported</span>
+                    <input
+                        type="date"
+                        name="date_reported"
+                        value="{{ case_record.date_reported.strftime('%Y-%m-%d') }}"
+                        required
+                    >
+                    {% if errors.date_reported %}
+                    <small>{{ errors.date_reported }}</small>
+                    {% endif %}
+                </label>
+            </div>
+
+            <label class="case-form__field case-form__field--wide">
+                <span>Notes</span>
+                <textarea name="notes" rows="5">{{ case_record.notes }}</textarea>
+            </label>
+
+            <div class="case-form__actions">
+                <a href="{{ url_for('index') }}" class="case-form__button case-form__button--secondary">Cancel</a>
+                <button type="submit" class="case-form__button">{{ submit_label }}</button>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Document{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    {% block head_extra %}{% endblock %}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            background-color: #ffffff;
+            color: #212529;
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="top-nav">
+            <!-- title of the website -->
+             <div class="logo">
+                <h1>Disease Case Log</h1>
+                <p>Track and manage disease cases effectively</p>
+             </div>
+            <div class="top-right-nav">
+                    <!-- nav: Export CSV, add new case -->
+                    <!-- position: top=0, right=0 -->
+                    <a href="{{ url_for('export_csv') }}">Export CSV</a>
+                    <a href="{{ url_for('add_case') }}">Add New Case</a>
+            </div>
+        </div>
+        <style>
+            .top-nav {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 20px;
+                background-color: #f8f9fa;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                border: 1px solid #e0e0e0;
+            }
+            .logo h1 {
+                margin: 0;
+                font-size: 24px;
+            }
+            .logo p {
+                margin: 0;
+                font-size: 14px;
+                color: #6c757d;
+            }
+            .top-right-nav a {
+                margin-left: 15px;
+                text-decoration: none;
+                color: #007bff;
+            }
+             .top-right-nav a:hover {
+                text-decoration: underline;
+            }
+            @media (max-width: 700px) {
+                .top-nav {
+                    align-items: flex-start;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                }
+                .top-right-nav {
+                    display: flex;
+                    gap: 14px;
+                    flex-wrap: wrap;
+                }
+                .top-right-nav a {
+                    margin-left: 0;
+                }
+            }
+        </style>
+    </header>
+    <div class="page-layout">
+        <div class="left-side-bar">
+            <nav class="side-left-nav">
+                <!-- Nav: Dashboard, map view, AI Outbreak Analyst -->
+                <a href="{{ url_for('index') }}">Dashboard</a>
+                <a href="{{ url_for('map_view') }}">Map View</a>
+                <a href="{{ url_for('ai_outbreak_analyst') }}">AI Outbreak Analyst</a>   
+            </nav>
+            <style>
+                .page-layout {
+                    display: flex;
+                    min-height: calc(100vh - 66px);
+                }
+                .left-side-bar {
+                    width: 240px;
+                    flex-shrink: 0;
+                }
+                .side-left-nav {
+                    display: flex;
+                    flex-direction: column;
+                    padding: 20px;
+                    background-color: #f8f9fa;
+                    height: 100%;
+                    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+                    border-right: 1px solid #e0e0e0;
+                }
+                .side-left-nav a {
+                    margin-bottom: 15px;
+                    text-decoration: none;
+                    color: #007bff;
+                }
+                .side-left-nav a:hover {
+                    text-decoration: underline;
+                }
+                .main-content {
+                    flex: 1;
+                    padding: 20px;
+                    background-color: #ffffff;
+                    color: #212529;
+                }
+                @media (max-width: 700px) {
+                    .page-layout {
+                        flex-direction: column;
+                        min-height: auto;
+                    }
+                    .left-side-bar {
+                        width: 100%;
+                    }
+                    .side-left-nav {
+                        flex-direction: row;
+                        gap: 16px;
+                        height: auto;
+                        overflow-x: auto;
+                        padding: 14px 20px;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+                        border-right: 0;
+                        border-bottom: 1px solid #e0e0e0;
+                    }
+                    .side-left-nav a {
+                        flex: 0 0 auto;
+                        margin-bottom: 0;
+                        white-space: nowrap;
+                    }
+                    .main-content {
+                        padding: 20px 16px;
+                    }
+                }
+            </style>
+        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages" role="status" aria-live="polite">
+                    {% for category, message in messages %}
+                        <p class="flash-message flash-message--{{ category }}">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

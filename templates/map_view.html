@@ -1,0 +1,16 @@
+{% extends "styles.html" %}
+
+{% block title %}Map View | Disease Case Log{% endblock %}
+
+{% block head_extra %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+{% endblock %}
+
+{% block content %}
+    <div class="main-content">
+        <h2>Map View</h2>
+        <div id="map" style="height: 500px;"></div>
+    </div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="{{ url_for('static', filename='js/map_view_api.js') }}"></script>
+{% endblock %}

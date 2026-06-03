@@ -1,0 +1,130 @@
+{% extends "styles.html" %}
+
+{% block title %}AI Outbreak Analyst | Disease Case Log{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <section class="ai-analyst" aria-labelledby="aiAnalystTitle">
+        <div class="ai-analyst__heading">
+            <p class="ai-analyst__eyebrow">AI Outbreak Analyst</p>
+            <h2 id="aiAnalystTitle">Outbreak Intelligence Brief</h2>
+            <p>AI-style insights generated from the current case log.</p>
+        </div>
+
+        <div class="ai-analyst__summary" aria-label="Analyst summary">
+            {% for card in analysis.summary_cards %}
+            <article class="ai-analyst__metric">
+                <span>{{ card.label }}</span>
+                <strong>{{ card.value }}</strong>
+                <p>{{ card.detail }}</p>
+            </article>
+            {% endfor %}
+        </div>
+
+        <section class="ai-analyst__section" aria-labelledby="summaryReportTitle">
+            <div class="ai-analyst__section-heading">
+                <h3 id="summaryReportTitle">Auto Summary Report</h3>
+                <p>Generated briefing based on disease, location, severity, and case volume.</p>
+            </div>
+            <div class="ai-analyst__report">
+                {% for line in analysis.report_lines %}
+                <p>{{ line }}</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="ai-analyst__section" aria-labelledby="riskPredictionTitle">
+            <div class="ai-analyst__section-heading">
+                <h3 id="riskPredictionTitle">Outbreak Risk Prediction</h3>
+                <p>Ranked by severity, case count, and how recent the report is.</p>
+            </div>
+
+            <div class="ai-risk-list">
+                {% for record in analysis.risk_predictions %}
+                <article class="ai-risk-item">
+                    <div class="ai-risk-item__main">
+                        <div>
+                            <h4>{{ record.disease_name }}</h4>
+                            <p>{{ record.location }} &middot; {{ record.date_reported.strftime('%b %d, %Y') }}</p>
+                        </div>
+                        <span class="severity-pill severity-pill--{{ record.severity|lower }}">
+                            <span aria-hidden="true"></span>{{ record.severity }}
+                        </span>
+                    </div>
+
+                    <div class="ai-risk-item__score">
+                        <span>{{ record.risk_label }}</span>
+                        <strong>{{ record.risk_score }}/100</strong>
+                    </div>
+                    <div
+                        class="ai-risk-meter"
+                        role="meter"
+                        aria-label="{{ record.disease_name }} risk score"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        aria-valuenow="{{ record.risk_score }}"
+                    >
+                        <span style="width: {{ record.risk_score }}%;"></span>
+                    </div>
+                    <p class="ai-risk-item__reason">{{ record.risk_explanation }}</p>
+                    <p class="ai-risk-item__action">{{ record.risk_recommendation }}</p>
+                </article>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="ai-analyst__section" aria-labelledby="trendDetectionTitle">
+            <div class="ai-analyst__section-heading">
+                <h3 id="trendDetectionTitle">Trend Detection</h3>
+                <p>Patterns detected across the logged outbreak records.</p>
+            </div>
+
+            <ul class="ai-trend-list">
+                {% for trend in analysis.trends %}
+                <li>{{ trend }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="ai-analyst__section" aria-labelledby="notesGeneratorTitle">
+            <div class="ai-analyst__section-heading">
+                <h3 id="notesGeneratorTitle">Case Notes Generator</h3>
+                <p>Create a professional note draft from one case record.</p>
+            </div>
+
+            <form class="ai-note-generator" data-ai-generator>
+                <div class="ai-note-generator__controls">
+                    <label>
+                        <span>Case Record</span>
+                        <select name="case_id">
+                            {% for record in case_records %}
+                            <option value="{{ record.id }}" {% if record.id == analysis.top_case_id %}selected{% endif %}>
+                                {{ record.disease_name }} - {{ record.location }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </label>
+
+                    <label>
+                        <span>Note Style</span>
+                        <select name="tone">
+                            <option value="brief">Brief</option>
+                            <option value="operations">Operations</option>
+                            <option value="public">Public Update</option>
+                        </select>
+                    </label>
+
+                    <button type="submit">Generate Note</button>
+                </div>
+
+                <label class="ai-note-generator__output">
+                    <span>Generated Note</span>
+                    <textarea rows="6" readonly data-note-output>{{ analysis.initial_note }}</textarea>
+                </label>
+            </form>
+        </section>
+    </section>
+</div>
+
+<script src="{{ url_for('static', filename='js/ai_outbreak_analyst.js') }}"></script>
+{% endblock %}

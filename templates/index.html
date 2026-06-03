@@ -1,0 +1,307 @@
+{% extends "styles.html" %}
+
+{% block title %}Home | Disease Case Log{% endblock %}
+
+
+{% block content %}
+<div class="main-content">
+    <div class="dashboard-intro">
+        <h2>Dashboard</h2>
+        <p>Welcome to the Disease Case Log Dashboard. Here you can view and manage all disease cases effectively.</p>
+    </div>
+
+    <section class="dashboard-cards" aria-label="Disease case summary">
+        <article class="dashboard-card dashboard-card--cases">
+            <div class="dashboard-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M3 17l6-6 4 4 8-8"></path>
+                    <path d="M14 7h7v7"></path>
+                </svg>
+            </div>
+            <div class="dashboard-card__content">
+                <p class="dashboard-card__value">{{ total_cases }}</p>
+                <h3 class="dashboard-card__label">Total Reported Cases</h3>
+            </div>
+        </article>
+
+        <article class="dashboard-card dashboard-card--types">
+            <div class="dashboard-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M3 12h4l2-7 4 14 2-7h6"></path>
+                </svg>
+            </div>
+            <div class="dashboard-card__content">
+                <p class="dashboard-card__value">{{ disease_types }}</p>
+                <h3 class="dashboard-card__label">Disease Types</h3>
+            </div>
+        </article>
+
+        <article class="dashboard-card dashboard-card--locations">
+            <div class="dashboard-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M12 22s7-5.1 7-12a7 7 0 0 0-14 0c0 6.9 7 12 7 12z"></path>
+                    <circle cx="12" cy="10" r="2.3"></circle>
+                </svg>
+            </div>
+            <div class="dashboard-card__content">
+                <p class="dashboard-card__value">{{ locations_affected }}</p>
+                <h3 class="dashboard-card__label">Locations Affected</h3>
+            </div>
+        </article>
+
+        <article class="dashboard-card dashboard-card--critical">
+            <div class="dashboard-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M12 4l9 16H3L12 4z"></path>
+                    <path d="M12 9v5"></path>
+                    <path d="M12 17h.01"></path>
+                </svg>
+            </div>
+            <div class="dashboard-card__content">
+                <p class="dashboard-card__value">{{ critical_outbreaks }}</p>
+                <h3 class="dashboard-card__label">Critical Outbreaks</h3>
+            </div>
+        </article>
+    </section>
+
+    <section class="outbreak-spotlight" aria-label="Outbreak spotlight">
+        <div class="outbreak-spotlight__header">
+            <h2 class="outbreak-spotlight__eyebrow">
+                <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                    <path d="M3 12h4l2-7 4 14 2-7h6"></path>
+                </svg>
+                Outbreak Spotlight
+            </h2>
+            <p class="outbreak-spotlight__counter">
+                <span id="currentSlide">1</span> / {{ recent_cases|length }}
+            </p>
+        </div>
+
+        <div class="outbreak-spotlight__carousel" id="outbreakCarousel">
+            {% for case in recent_cases %}
+            <article
+                class="outbreak-spotlight__card outbreak-spotlight__card--{{ case.severity|lower }}{% if loop.first %} is-active{% endif %}"
+                id="slide{{ loop.index }}"
+                data-slide="{{ loop.index0 }}"
+                role="group"
+                aria-roledescription="slide"
+                aria-label="{{ case.disease_name }} in {{ case.location }} with {{ '{:,}'.format(case.case_count) }} cases on {{ case.date_reported.strftime('%B %d, %Y') }}"
+                {% if not loop.first %}hidden{% endif %}
+            >
+                <div class="outbreak-spotlight__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false">
+                        <circle cx="12" cy="12" r="7"></circle>
+                        <circle cx="12" cy="12" r="2"></circle>
+                        <path d="M12 2v3"></path>
+                        <path d="M12 19v3"></path>
+                        <path d="M2 12h3"></path>
+                        <path d="M19 12h3"></path>
+                        <path d="M4.9 4.9l2.1 2.1"></path>
+                        <path d="M17 17l2.1 2.1"></path>
+                        <path d="M19.1 4.9L17 7"></path>
+                        <path d="M7 17l-2.1 2.1"></path>
+                    </svg>
+                </div>
+
+                <div class="outbreak-spotlight__content">
+                    <div class="outbreak-spotlight__title-row">
+                        <h3 class="outbreak-spotlight__disease">{{ case.disease_name }}</h3>
+                        <span class="outbreak-spotlight__badge">
+                            <span aria-hidden="true"></span>{{ case.severity }}
+                        </span>
+                    </div>
+
+                    <div class="outbreak-spotlight__meta">
+                        <span>
+                            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                <path d="M12 22s7-5.1 7-12a7 7 0 0 0-14 0c0 6.9 7 12 7 12z"></path>
+                                <circle cx="12" cy="10" r="2.3"></circle>
+                            </svg>
+                            {{ case.location }}
+                        </span>
+                        <span>
+                            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            {{ "{:,}".format(case.case_count) }} cases
+                        </span>
+                        <span>
+                            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                <path d="M8 2v4"></path>
+                                <path d="M16 2v4"></path>
+                                <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                                <path d="M3 10h18"></path>
+                            </svg>
+                            {{ case.date_reported.strftime('%b %d, %Y') }}
+                        </span>
+                    </div>
+
+                    <p class="outbreak-spotlight__notes">{{ case.notes }}</p>
+                    <a href="{{ url_for('map_view') }}" class="outbreak-spotlight__link">View full details &rarr;</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <div class="outbreak-spotlight__footer">
+            <div class="outbreak-spotlight__indicators" role="tablist" aria-label="Outbreak slides">
+                {% for case in recent_cases %}
+                <button
+                    class="outbreak-spotlight__indicator{% if loop.first %} is-active{% endif %}"
+                    type="button"
+                    role="tab"
+                    aria-selected="{{ 'true' if loop.first else 'false' }}"
+                    aria-controls="slide{{ loop.index }}"
+                    id="indicator{{ loop.index }}"
+                    data-slide="{{ loop.index0 }}"
+                >
+                    <span class="sr-only">Slide {{ loop.index }}</span>
+                </button>
+                {% endfor %}
+            </div>
+
+            <div class="outbreak-spotlight__actions">
+                <button class="outbreak-spotlight__nav" type="button" aria-label="Previous outbreak" id="prevSlide">
+                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                        <path d="M15 18l-6-6 6-6"></path>
+                    </svg>
+                </button>
+                <button class="outbreak-spotlight__nav" type="button" aria-label="Next outbreak" id="nextSlide">
+                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                        <path d="M9 18l6-6-6-6"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <section class="case-records" aria-labelledby="caseRecordsTitle" data-case-records>
+        <div class="case-records__heading">
+            <h2 id="caseRecordsTitle">Case Records</h2>
+            <p>{{ case_records|length }} total entries logged</p>
+        </div>
+
+        <div class="case-records__panel">
+            <div class="case-records__toolbar">
+                <label class="case-records__search" for="caseRecordsSearch">
+                    <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                        <circle cx="11" cy="11" r="7"></circle>
+                        <path d="m20 20-3.5-3.5"></path>
+                    </svg>
+                    <input
+                        id="caseRecordsSearch"
+                        type="search"
+                        placeholder="Search disease, city, notes..."
+                        autocomplete="off"
+                    >
+                </label>
+
+                <div class="case-records__filters" aria-label="Filter records by severity">
+                    <span class="case-records__filter-label">
+                        <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                            <path d="M3 5h18l-7 8v5l-4 2v-7z"></path>
+                        </svg>
+                        Severity:
+                    </span>
+                    <button class="case-records__filter is-active" type="button" data-severity-filter="all" aria-pressed="true">
+                        All
+                    </button>
+                    <button class="case-records__filter case-records__filter--low" type="button" data-severity-filter="low" aria-pressed="false">
+                        <span aria-hidden="true"></span>Low
+                    </button>
+                    <button class="case-records__filter case-records__filter--moderate" type="button" data-severity-filter="moderate" aria-pressed="false">
+                        <span aria-hidden="true"></span>Moderate
+                    </button>
+                    <button class="case-records__filter case-records__filter--high" type="button" data-severity-filter="high" aria-pressed="false">
+                        <span aria-hidden="true"></span>High
+                    </button>
+                    <button class="case-records__filter case-records__filter--critical" type="button" data-severity-filter="critical" aria-pressed="false">
+                        <span aria-hidden="true"></span>Critical
+                    </button>
+                </div>
+            </div>
+
+            <div class="case-records__table-wrap">
+                <table class="case-records__table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Disease <span class="case-records__sort-icon" aria-hidden="true"></span></th>
+                            <th scope="col">City / County <span class="case-records__sort-icon" aria-hidden="true"></span></th>
+                            <th scope="col">Cases <span class="case-records__sort-icon" aria-hidden="true"></span></th>
+                            <th scope="col">Date Reported <span class="case-records__sort-icon case-records__sort-icon--desc" aria-hidden="true"></span></th>
+                            <th scope="col">Severity <span class="case-records__sort-icon" aria-hidden="true"></span></th>
+                            <th scope="col">Notes</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in case_records %}
+                        <tr
+                            data-case-record
+                            data-severity="{{ record.severity|lower }}"
+                            data-search="{{ record.disease_name }} {{ record.location }} {{ record.notes }}"
+                        >
+                            <td class="case-records__disease">{{ record.disease_name }}</td>
+                            <td>{{ record.location }}</td>
+                            <td class="case-records__cases">{{ "{:,}".format(record.case_count) }}</td>
+                            <td>{{ record.date_reported.strftime('%b %d, %Y') }}</td>
+                            <td>
+                                <span class="severity-pill severity-pill--{{ record.severity|lower }}">
+                                    <span aria-hidden="true"></span>{{ record.severity }}
+                                </span>
+                            </td>
+                            <td class="case-records__notes">
+                                <span>{{ record.notes }}</span>
+                            </td>
+                            <td>
+                                <div class="case-records__actions">
+                                    <a href="{{ url_for('map_view') }}" aria-label="View {{ record.disease_name }} details">
+                                        <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                            <path d="M14 3h7v7"></path>
+                                            <path d="M10 14 21 3"></path>
+                                            <path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path>
+                                        </svg>
+                                    </a>
+                                    <a href="{{ url_for('edit_case', case_id=record.id) }}" aria-label="Edit {{ record.disease_name }} record">
+                                        <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                            <path d="M12 20h9"></path>
+                                            <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"></path>
+                                        </svg>
+                                    </a>
+                                    <form method="post" action="{{ url_for('delete_case', case_id=record.id) }}" onsubmit="return confirm('Delete this case record?');">
+                                        <button type="submit" aria-label="Delete {{ record.disease_name }} record">
+                                            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                                                <path d="M3 6h18"></path>
+                                                <path d="M8 6V4h8v2"></path>
+                                                <path d="M19 6l-1 14H6L5 6"></path>
+                                                <path d="M10 11v6"></path>
+                                                <path d="M14 11v6"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="case-records__empty" data-empty-state hidden>
+                            <td colspan="7">No matching entries</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="case-records__summary">
+                Showing <strong id="caseRecordsVisibleCount">{{ case_records|length }}</strong> of <strong>{{ case_records|length }}</strong> entries
+            </p>
+        </div>
+    </section>
+</div>
+
+<script src="{{ url_for('static', filename='js/outbreak_spotlight.js') }}"></script>
+<script src="{{ url_for('static', filename='js/case_records.js') }}"></script>
+
+
+{% endblock %}
